@@ -8,5 +8,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@binance/connector": "^3.6.1",
+    "dotenv": "^16.4.7"
+  }
 }
