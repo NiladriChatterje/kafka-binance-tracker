@@ -15,7 +15,7 @@ const kafka: Kafka = new Kafka({
     logLevel: logLevel.INFO
 });
 
-export const SYMBOLS = ['BNBUSDT', 'STORJETH', 'STORJBTC', 'ENJETH', 'MODETH', 'MODBTC']
+const SYMBOLS = ['BNBUSDT', 'STORJETH', 'STORJBTC', 'ENJETH', 'MODETH', 'MODBTC']
 const callbacks = {
     open: () => spot.logger.info('open'),
     close: () => spot.logger.debug('closed'),

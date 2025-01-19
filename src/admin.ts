@@ -1,5 +1,6 @@
 import { Kafka } from 'kafkajs';
-import { SYMBOLS } from './producer';
+import dotenv from 'dotenv';
+dotenv.config()
 
 async function init() {
     const kafka = new Kafka({
@@ -7,15 +8,19 @@ async function init() {
         brokers: [process.env.KAFKA_BROKER]
     });
     const admin = kafka.admin();
-    admin.createTopics({
+    await admin.createTopics({
         topics: [{
             topic: 'crypto-topic',
-            numPartitions: SYMBOLS.length,
-            replicationFactor: 3
+            numPartitions: 6,
+            replicationFactor: 1
         }]
     });
 
     await admin.disconnect();
 }
 
-init()
+init().then(() => {
+    console.log('topics created')
+}).catch(err => {
+    console.log(err)
+})

@@ -1,4 +1,6 @@
 import { Consumer, EachMessagePayload, Kafka } from "kafkajs";
+import dotenv from 'dotenv';
+dotenv.config()
 
 const kafka: Kafka = new Kafka({
     clientId: 'crypto-tracker',
@@ -11,7 +13,7 @@ const consumer: Consumer = kafka.consumer({
 });
 
 async function handleMessage({ topic, partition, message, heartbeat, pause }: EachMessagePayload): Promise<void> {
-
+    console.log(`consumed from ${partition} : ${message.value.toString()}`)
 }
 
 const init = async (): Promise<void> => {
@@ -20,3 +22,7 @@ const init = async (): Promise<void> => {
         eachMessage: handleMessage
     })
 }
+
+init().then(() => {
+    console.log('consumer running successfully')
+});
