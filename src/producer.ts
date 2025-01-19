@@ -27,7 +27,7 @@ async function init(): Promise<void> {
 
             await producer.send({
                 topic: 'crypto-topic',
-                messages: [{ value: data, key: jsonData['data']['s'] }]
+                messages: [{ value: data, key: jsonData['data']['s'], partition: Math.trunc(Math.random() * 6) }]
             })
             // await producer.disconnect();
         }
