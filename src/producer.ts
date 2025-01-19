@@ -21,10 +21,11 @@ const callbacks = {
     close: () => spot.logger.debug('closed'),
     message: async (data: string) => {
         const jsonData = JSON.parse(data);
-        console.log(jsonData)
+        console.log(jsonData);
+
         // await producer.send({
-        //     topic:jsonData['s'],
-        //     messages:[{value:data}]
+        //     topic:'crypto-topic',
+        //     messages:[{value:data,key:jsonData.data['s']}]
         // })
 
         // await producer.disconnect();
