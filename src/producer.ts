@@ -14,21 +14,22 @@ const kafka = new Kafka({
     brokers: [process.env.KAFKA_BROKER],
     logLevel: logLevel.INFO
 });
-const producer = kafka.producer();
+
 export const SYMBOLS = ['BNBUSDT', 'STORJETH', 'STORJBTC', 'ENJETH', 'MODETH', 'MODBTC']
 const callbacks = {
     open: () => spot.logger.info('open'),
     close: () => spot.logger.debug('closed'),
     message: async (data: string) => {
+        const producer = kafka.producer();
         const jsonData = JSON.parse(data);
         console.log(jsonData);
 
-        // await producer.send({
-        //     topic:'crypto-topic',
-        //     messages:[{value:data,key:jsonData.data['s']}]
-        // })
+        await producer.send({
+            topic: 'crypto-topic',
+            messages: [{ value: data, key: jsonData.data['s'] }]
+        })
 
-        // await producer.disconnect();
+        await producer.disconnect();
     }
 }
 
