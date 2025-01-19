@@ -14,30 +14,37 @@ const kafka: Kafka = new Kafka({
     brokers: [process.env.KAFKA_BROKER],
     logLevel: logLevel.INFO
 });
+async function init(): Promise<void> {
+    const producer: Producer = kafka.producer();
+    await producer.connect();
+    const SYMBOLS = ['BNBUSDT', 'STORJETH', 'STORJBTC', 'ENJETH', 'MODETH', 'MODBTC']
+    const callbacks = {
+        open: () => spot.logger.info('open'),
+        close: () => spot.logger.debug('closed'),
+        message: async (data: string): Promise<void> => {
+            const jsonData = JSON.parse(data);
+            console.log(jsonData);
 
-const SYMBOLS = ['BNBUSDT', 'STORJETH', 'STORJBTC', 'ENJETH', 'MODETH', 'MODBTC']
-const callbacks = {
-    open: () => spot.logger.info('open'),
-    close: () => spot.logger.debug('closed'),
-    message: async (data: string): Promise<void> => {
-        const producer: Producer = kafka.producer();
-        const jsonData = JSON.parse(data);
-        console.log(jsonData);
-
-        await producer.send({
-            topic: 'crypto-topic',
-            messages: [{ value: data, key: jsonData.data['s'] }]
-        })
-
-        await producer.disconnect();
+            await producer.send({
+                topic: 'crypto-topic',
+                messages: [{ value: data, key: jsonData['data']['s'] }]
+            })
+            // await producer.disconnect();
+        }
     }
+    const websocketStreamClient = new WebsocketStream({ callbacks, combinedStreams: true });
+    for (let symbol of SYMBOLS)
+        websocketStreamClient.aggTrade(symbol);
 }
+
 
 //  This exchangeInformation() was run to pick some symbol lists
 //   spot.exchangeInformation().then((value)=>{
 //     console.log(value)
 // })
 
-const websocketStreamClient = new WebsocketStream({ callbacks, combinedStreams: true });
-for (let symbol of SYMBOLS)
-    websocketStreamClient.aggTrade(symbol);
+init().then(() => {
+    console.log('successfully Producer running')
+}).catch(_err => {
+    console.error("ran into some issue");
+})

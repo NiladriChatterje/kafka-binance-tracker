@@ -17,6 +17,8 @@ async function handleMessage({ topic, partition, message, heartbeat, pause }: Ea
 }
 
 const init = async (): Promise<void> => {
+    await consumer.connect();
+    await consumer.subscribe({ topic: 'crypto-topic' });
 
     await consumer.run({
         eachMessage: handleMessage
