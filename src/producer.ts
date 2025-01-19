@@ -1,5 +1,5 @@
 import { Spot, WebsocketStream } from '@binance/connector-typescript';
-import { Kafka, logLevel } from 'kafkajs';
+import { Kafka, logLevel, Producer } from 'kafkajs';
 import dotenv from 'dotenv'
 dotenv.config();
 
@@ -9,7 +9,7 @@ const SECRET = '2b5eb11e18796d12d88f13dc27dbbd02c2cc51ff7059765ed9821957d82bb4d9
 const spot: Spot = new Spot(API_KEY, SECRET, {
     baseURL: 'https://api.binance.com'
 });
-const kafka = new Kafka({
+const kafka: Kafka = new Kafka({
     clientId: 'crypto-tracker',
     brokers: [process.env.KAFKA_BROKER],
     logLevel: logLevel.INFO
@@ -19,8 +19,8 @@ export const SYMBOLS = ['BNBUSDT', 'STORJETH', 'STORJBTC', 'ENJETH', 'MODETH', '
 const callbacks = {
     open: () => spot.logger.info('open'),
     close: () => spot.logger.debug('closed'),
-    message: async (data: string) => {
-        const producer = kafka.producer();
+    message: async (data: string): Promise<void> => {
+        const producer: Producer = kafka.producer();
         const jsonData = JSON.parse(data);
         console.log(jsonData);
 
